@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anish Soobagrah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D2438;
+    --panel:#123049;
+    --grid:rgba(169,203,221,0.12);
+    --line:rgba(169,203,221,0.32);
+    --line-strong:#9FC3D8;
+    --text:#EAF2F6;
+    --muted:#82A5BB;
+    --accent:#FFB020;
+    --accent2:#5FD8C4;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'IBM Plex Sans', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  a{ color:inherit; }
+  h1,h2,h3{ font-family:var(--font-display); margin:0; font-weight:600; }
+  p{ margin:0; }
+  button{ font-family:inherit; }
+
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 34px),
+      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 34px);
+  }
+
+  /* ---------- Header / titleblock ---------- */
+  .titleblock{
+    position:relative; z-index:2;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:20px;
+    padding:28px clamp(20px,4vw,48px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand-name{ font-family:var(--font-display); font-size:19px; font-weight:600; display:block; }
+  .brand-role{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); display:block; margin-top:4px; }
+
+  .sheet-nav{ display:flex; gap:clamp(14px,2.4vw,30px); flex-wrap:wrap; }
+  .nav-item{
+    background:none; border:none; color:var(--muted); cursor:pointer;
+    display:flex; align-items:baseline; gap:7px; padding:4px 0 8px;
+    border-bottom:2px solid transparent;
+  }
+  .nav-num{ font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+  .nav-label{ font-family:var(--font-display); font-size:14.5px; }
+  .nav-item.active{ border-bottom-color:var(--accent); }
+  .nav-item.active .nav-label, .nav-item.active .nav-num{ color:var(--accent); }
+  .nav-item:hover .nav-label{ color:var(--text); }
+
+  /* ---------- Stage ---------- */
+  .sheet-stage{
+    position:relative; z-index:1;
+    max-width:940px; margin:0 auto;
+    padding:clamp(40px,7vw,72px) clamp(20px,4vw,32px) 100px;
+    min-height:64vh;
+  }
+  .frame{ position:absolute; inset:14px; width:calc(100% - 28px); height:calc(100% - 28px); pointer-events:none; z-index:2; }
+  .frame-rect{ fill:none; stroke:var(--accent); stroke-width:0.35; stroke-dasharray:100; stroke-dashoffset:100; opacity:.9; }
+  .frame-rect.drawing{ animation:draw .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  .sheet{
+    display:none; opacity:1; transform:translateY(0);
+    transition:opacity .32s ease, transform .32s ease;
+  }
+  .sheet.active{ display:block; }
+  .sheet.enter{ opacity:0; transform:translateY(16px); }
+  .sheet.leave{ opacity:0; transform:translateY(-16px); }
+
+  .eyebrow{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); letter-spacing:.02em; }
+
+  /* ---------- Cover ---------- */
+  #cover{ min-height:74vh; display:flex; flex-direction:column; gap:22px; }
+  .cover-index{ margin-top:auto; padding-top:32px; display:flex; flex-direction:column; animation:fadeUp .7s ease both; animation-delay:.85s; }
+  .index-row{ display:flex; align-items:center; gap:16px; width:100%; background:none; border:none; border-top:1px solid var(--line); color:var(--text); text-align:left; cursor:pointer; padding:16px 4px; font-family:var(--font-display); font-size:16px; }
+  .index-row:last-child{ border-bottom:1px solid var(--line); }
+  .index-num{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); width:26px; flex-shrink:0; }
+  .index-row:hover{ color:var(--accent); }
+  .index-row:hover .index-num{ color:var(--accent); }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(18px);} to{ opacity:1; transform:translateY(0);} }
+  .cv-eyebrow{ animation:fadeUp .6s ease both; animation-delay:.05s; }
+  .cv-head{ animation:fadeUp .7s ease both; animation-delay:.2s;
+    font-size:clamp(32px,5.4vw,54px); line-height:1.12; max-width:14ch; }
+  .cv-sub{ animation:fadeUp .7s ease both; animation-delay:.4s;
+    font-size:clamp(16px,2vw,19px); color:var(--muted); max-width:52ch; }
+  .cv-meta{ animation:fadeUp .7s ease both; animation-delay:.55s;
+    display:flex; gap:28px; flex-wrap:wrap; font-family:var(--font-mono); font-size:13px; color:var(--line-strong); }
+  .cv-cta{ animation:fadeUp .7s ease both; animation-delay:.7s; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--accent); color:#0D2438; border:none;
+    font-family:var(--font-display); font-weight:600; font-size:14.5px;
+    padding:13px 22px; cursor:pointer; border-radius:2px;
+  }
+  .btn:hover{ background:#ffc352; }
+  .btn.ghost{
+    background:none; color:var(--text); border:1px solid var(--line-strong);
+  }
+  .btn.ghost:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ---------- Section heads ---------- */
+  .sheet h2{ font-size:clamp(24px,3.4vw,32px); margin-bottom:6px; }
+  .sheet .sheet-intro{ color:var(--muted); max-width:56ch; margin-bottom:36px; font-size:15px; }
+
+  /* ---------- Panels (experience/extracurricular) ---------- */
+  .panel{
+    border:1px solid var(--line); background:var(--panel);
+    padding:26px clamp(18px,3vw,30px); margin-bottom:22px;
+  }
+  .panel-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+    flex-wrap:wrap; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line);
+  }
+  .panel-role{ font-family:var(--font-display); font-size:19px; font-weight:600; }
+  .panel-sub{ color:var(--muted); font-size:14.5px; margin-top:3px; }
+  .panel-meta{ font-family:var(--font-mono); font-size:12.5px; color:var(--line-strong); text-align:right; line-height:1.7; }
+  .panel ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:11px; }
+  .panel li{ display:flex; gap:12px; font-size:15px; }
+  .panel li::before{ content:''; min-width:6px; height:6px; margin-top:9px; background:var(--accent); }
+  .stat{ color:var(--accent); font-family:var(--font-mono); font-weight:500; }
+
+  .note-line{ font-family:var(--font-mono); font-size:13px; color:var(--muted); margin-top:8px; }
+
+  /* ---------- Projects ---------- */
+  .proj-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+  .proj-card{ border:1px solid var(--line); padding:22px; display:flex; flex-direction:column; gap:12px; }
+  .proj-num{ font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+  .proj-title{ font-family:var(--font-display); font-size:17.5px; font-weight:600; }
+  .proj-body{ font-size:14.5px; color:var(--line-strong); flex-grow:1; }
+
+  /* ---------- Skills ---------- */
+  .skill-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:28px; }
+  .skill-group h3{ font-size:14px; font-family:var(--font-mono); color:var(--accent2); font-weight:500; margin-bottom:12px; }
+  .skill-group p{ font-size:15px; line-height:1.7; color:var(--text); }
+
+  /* ---------- Contact ---------- */
+  .contact-links{ display:flex; flex-direction:column; gap:16px; margin-top:28px; max-width:420px; }
+  .contact-row{ display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px; }
+  .contact-label{ font-family:var(--font-mono); font-size:13px; color:var(--muted); }
+  .contact-value{ font-size:15px; text-align:right; }
+  .contact-value a:hover{ color:var(--accent); }
+
+  /* ---------- Bottom Navigation ---------- */
+  .bottom-nav{
+    margin-top:54px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    display:flex; gap:clamp(14px,2.4vw,24px); flex-wrap:wrap;
+  }
+
+  /* ---------- Footer readout ---------- */
+  .readout{
+    position:relative; z-index:1;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-family:var(--font-mono); font-size:12px; color:var(--muted);
+    padding:18px clamp(20px,4vw,48px); border-top:1px solid var(--line);
+  }
+
+  @media (max-width:640px){
+    .panel-meta{ text-align:left; }
+    .panel-head{ flex-direction:column; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .sheet, .cv-eyebrow, .cv-head, .cv-sub, .cv-meta, .cv-cta, .frame-rect{
+      animation:none !important; transition:none !important;
+    }
+    .frame-rect{ stroke-dashoffset:0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="titleblock">
+  <div>
+    <span class="brand-name">Anish Soobagrah</span>
+    <span class="brand-role">Engineering Mathematics, University of Bristol</span>
+  </div>
+  <nav class="sheet-nav" aria-label="Sections">
+    <button type="button" class="nav-item active" data-target="cover"><span class="nav-num">00</span><span class="nav-label">Cover</span></button>
+    <button type="button" class="nav-item" data-target="experience"><span class="nav-num">01</span><span class="nav-label">Experience</span></button>
+    <button type="button" class="nav-item" data-target="projects"><span class="nav-num">02</span><span class="nav-label">Projects</span></button>
+    <button type="button" class="nav-item" data-target="competitions"><span class="nav-num">03</span><span class="nav-label">Competitions</span></button>
+    <button type="button" class="nav-item" data-target="extracurricular"><span class="nav-num">04</span><span class="nav-label">Extracurricular</span></button>
+    <button type="button" class="nav-item" data-target="skills"><span class="nav-num">05</span><span class="nav-label">Skills</span></button>
+    <button type="button" class="nav-item" data-target="contact"><span class="nav-num">06</span><span class="nav-label">Contact</span></button>
+  </nav>
+</header>
+
+<main class="sheet-stage">
+  <svg class="frame" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <rect x="0.5" y="0.5" width="99" height="99" pathLength="100" class="frame-rect"></rect>
+  </svg>
+
+  <section id="cover" class="sheet active">
+    <p class="eyebrow cv-eyebrow">Tech Analyst, Baker Hughes / Bristol, UK</p>
+    <h1 class="cv-head">I build things that get used, not just demoed.</h1>
+    <p class="cv-sub">Engineering Mathematics at Bristol, currently on placement building AI agents and automation at Baker Hughes. Previously EY. Winner, Bristol Data Science Society Hackathon.</p>
+    <div class="cv-meta">
+      <span>Bristol and Newcastle, UK</span>
+      <span>Open to Software Engineering and Data/AI roles</span>
+    </div>
+    <nav class="cover-index" aria-label="Jump to section">
+      <button type="button" class="index-row" data-target="experience"><span class="index-num">01</span><span class="index-label">See experience</span></button>
+      <button type="button" class="index-row" data-target="projects"><span class="index-num">02</span><span class="index-label">See the work</span></button>
+      <button type="button" class="index-row" data-target="competitions"><span class="index-num">03</span><span class="index-label">See the competitions</span></button>
+      <button type="button" class="index-row" data-target="extracurricular"><span class="index-num">04</span><span class="index-label">See extracurriculars</span></button>
+      <button type="button" class="index-row" data-target="skills"><span class="index-num">05</span><span class="index-label">See the skills</span></button>
+      <button type="button" class="index-row" data-target="contact"><span class="index-num">06</span><span class="index-label">Contact me</span></button>
+    </nav>
+  </section>
+
+  <section id="experience" class="sheet">
+    <p class="eyebrow">01 / Experience</p>
+    <h2>Where I've worked</h2>
+    <p class="sheet-intro">Two very different kinds of rigor: making a number defensible, and making a system hold up once someone else relies on it.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">Tech Analyst</div>
+          <div class="panel-sub">Industrial Placement, Baker Hughes</div>
+        </div>
+        <div class="panel-meta">Cramlington, UK<br>Since June 2026</div>
+      </div>
+      <ul>
+        <li>Designed and deployed AI agents that automate documentation workflows, cutting processing time by <span class="stat">20%</span>.</li>
+        <li>Built Power Apps solutions and automated workflows now used across the business, delivering <span class="stat">$100k</span> in measured value.</li>
+        <li>Triggered AWS Lambda functions to run backend logic for the customer portal.</li>
+        <li>Fine tuned RT-DETR in PyTorch to detect cracks in industrial pipelines, work that feeds directly into the team's crack detection service line.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">Business Analyst Intern</div>
+          <div class="panel-sub">EY</div>
+        </div>
+        <div class="panel-meta">Ebene, Mauritius<br>Aug to Sep 2025</div>
+      </div>
+      <ul>
+        <li>Applied structured analytical models in a regulated environment, contributing <span class="stat">£10,000</span> in recovered value.</li>
+        <li>Queried and managed liquidation and resale data in Oracle using SQL, delivering insights that reduced outstanding liabilities by <span class="stat">5%</span>.</li>
+      </ul>
+    </div>
+
+    <p class="note-line">Insight Weeks: Procter and Gamble (June 2026), Moore Global (July 2025)</p>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="cover"><span class="nav-label">← Back to Cover</span></button>
+      <button type="button" class="nav-item" data-target="projects"><span class="nav-label">Next: Projects →</span></button>
+    </nav>
+  </section>
+
+  <section id="projects" class="sheet">
+    <p class="eyebrow">02 / Projects</p>
+    <h2>Things I've built</h2>
+    <p class="sheet-intro">Mostly the same instinct applied to different data: find the insight, then find who it actually helps.</p>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <span class="proj-num">01</span>
+        <span class="proj-title">HCP Engagement Predictor</span>
+        <p class="proj-body">An end to end machine learning pipeline predicting which healthcare professionals a pharma sales team should prioritise. Targeting the top <span class="stat">20%</span> of model ranked contacts captures <span class="stat">34%</span> of likely engagers, a <span class="stat">1.7x</span> uplift over random outreach.</p>
+      </div>
+      <div class="proj-card">
+        <span class="proj-num">02</span>
+        <span class="proj-title">Pipeline Crack Detection</span>
+        <p class="proj-body">Fine tuned RT-DETR in PyTorch to detect cracks in industrial equipment from image data, building a proof of concept to assess feasibility for predictive maintenance.</p>
+      </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="experience"><span class="nav-label">← Experience</span></button>
+      <button type="button" class="nav-item" data-target="competitions"><span class="nav-label">Next: Competitions →</span></button>
+    </nav>
+  </section>
+
+  <section id="competitions" class="sheet">
+    <p class="eyebrow">03 / Competitions</p>
+    <h2>Where I've competed</h2>
+    <p class="sheet-intro">Short deadlines, a dataset I've never seen before, and a room that has to be convinced fast.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">1st Place</div>
+          <div class="panel-sub">DVS x University of Bristol Hackathon</div>
+        </div>
+        <div class="panel-meta">Bristol, UK<br>90 minute sprint</div>
+      </div>
+      <ul>
+        <li>Cleaned and modelled raw customer data in Python, then built two interactive Power BI dashboards to surface growth opportunities.</li>
+        <li>Translated the findings into a data driven growth strategy, presenting actionable recommendations to the industry consultants judging the challenge.</li>
+      </ul>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="projects"><span class="nav-label">← Projects</span></button>
+      <button type="button" class="nav-item" data-target="extracurricular"><span class="nav-label">Next: Extracurricular →</span></button>
+    </nav>
+  </section>
+
+  <!-- NEW EXTRACURRICULAR SECTION -->
+  <section id="extracurricular" class="sheet">
+    <p class="eyebrow">04 / Extracurricular</p>
+    <h2>Outside the Classroom</h2>
+    <p class="sheet-intro">Leadership, teamwork, and organizing the community.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">Outreach Officer</div>
+          <div class="panel-sub">Bristol Data Science Society</div>
+        </div>
+        <div class="panel-meta">Bristol, UK<br>Dec 2024 – May 2026</div>
+      </div>
+      <ul>
+        <li>Led the organisation of a 200-student hackathon, producing 10+ prototypes including a computer-vision recycling sorter and a carbon-footprint tracker for student commuters.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">Treasurer</div>
+          <div class="panel-sub">Bristol Formula Student AI</div>
+        </div>
+        <div class="panel-meta">Bristol, UK<br>Mar 2025 – Aug 2025</div>
+      </div>
+      <ul>
+        <li>Managed a £200k budget and secured sponsorship from Oracle to fund the team’s AI and engineering development.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-role">Team Player</div>
+          <div class="panel-sub">University 8-a-side Football</div>
+        </div>
+        <div class="panel-meta">Bristol, UK</div>
+      </div>
+      <ul>
+        <li>Won the second division of 8-a-side football for the university.</li>
+      </ul>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="competitions"><span class="nav-label">← Competitions</span></button>
+      <button type="button" class="nav-item" data-target="skills"><span class="nav-label">Next: Skills →</span></button>
+    </nav>
+  </section>
+
+  <section id="skills" class="sheet">
+    <p class="eyebrow">05 / Skills</p>
+    <h2>What I work with</h2>
+    <p class="sheet-intro">The tools I reach for most, grouped by what they're actually for.</p>
+    <div class="skill-grid">
+      <div class="skill-group">
+        <h3>Technical</h3>
+        <p>Python (PyTorch, scikit-learn, pandas), SQL (Oracle), Power BI, Excel, Git and GitHub</p>
+      </div>
+      <div class="skill-group">
+        <h3>Platforms</h3>
+        <p>Microsoft Power Platform, AWS Lambda, AI tools (Claude, Copilot)</p>
+      </div>
+      <div class="skill-group">
+        <h3>Certifications</h3>
+        <p>Google AI Essentials, IBM Databases and SQL for Data Science, JPMorgan Chase Quantitative Research (Forage)</p>
+      </div>
+      <div class="skill-group">
+        <h3>Languages</h3>
+        <p>English, French, Mauritian Creole (native)</p>
+      </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="extracurricular"><span class="nav-label">← Extracurricular</span></button>
+      <button type="button" class="nav-item" data-target="contact"><span class="nav-label">Next: Contact →</span></button>
+    </nav>
+  </section>
+
+  <section id="contact" class="sheet">
+    <p class="eyebrow">06 / Contact</p>
+    <h2>Let's talk.</h2>
+    <p class="sheet-intro">Open to Software Engineering and Data/AI internships and graduate roles.</p>
+    <div class="contact-links">
+      <div class="contact-row">
+        <span class="contact-label">Email</span>
+        <span class="contact-value"><a href="mailto:oj24073@bristol.ac.uk">oj24073@bristol.ac.uk</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Phone</span>
+        <span class="contact-value">+44 7562 295710</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">LinkedIn</span>
+        <span class="contact-value"><a href="https://www.linkedin.com/in/anish-soobagrah-963a8334b/" target="_blank" rel="noopener">anish-soobagrah</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">GitHub</span>
+        <span class="contact-value"><a href="https://github.com/anishsoo" target="_blank" rel="noopener">anishsoo</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Based in</span>
+        <span class="contact-value">Bristol and Newcastle, UK</span>
+      </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" aria-label="Sections">
+      <button type="button" class="nav-item" data-target="skills"><span class="nav-label">← Skills</span></button>
+      <button type="button" class="nav-item" data-target="cover"><span class="nav-label">Back to Cover</span></button>
+    </nav>
+  </section>
+</main>
+
+<footer class="readout">
+  <span id="coord-place">Newcastle upon Tyne, UK</span>
+  <span id="coord-value">54.9783 N, 1.6178 W</span>
+</footer>
+
+<script>
+  const coords = {
+    cover:         { place: 'Newcastle upon Tyne, UK', value: '54.9783 N, 1.6178 W' },
+    experience:    { place: 'Cramlington, UK',         value: '55.0870 N, 1.5849 W' },
+    projects:      { place: 'Bristol, UK',             value: '51.4545 N, 2.5879 W' },
+    competitions:  { place: 'Bristol, UK',             value: '51.4545 N, 2.5879 W' },
+    extracurricular: { place: 'Bristol, UK',           value: '51.4545 N, 2.5879 W' },
+    skills:        { place: 'Bristol, UK',             value: '51.4545 N, 2.5879 W' },
+    contact:       { place: 'United Kingdom',          value: 'Open to relocation' },
+  };
+
+  let currentId = 'cover';
+  // Note: we update this selector so it targets buttons in BOTH top and bottom navs
+  const navItems = document.querySelectorAll('.nav-item');
+  const placeEl = document.getElementById('coord-place');
+  const valueEl = document.getElementById('coord-value');
+  const frameRect = document.querySelector('.frame-rect');
+
+  function reducedMotion(){
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function restartFrame(){
+    frameRect.classList.remove('drawing');
+    void frameRect.getBoundingClientRect();
+    frameRect.classList.add('drawing');
+  }
+
+  function updateNav(id){
+    navItems.forEach(btn => btn.classList.toggle('active', btn.dataset.target === id));
+  }
+
+  function updateCoords(id){
+    const c = coords[id];
+    if(!c) return;
+    placeEl.textContent = c.place;
+    valueEl.textContent = c.value;
+  }
+
+  function showSheet(id){
+    if(id === currentId) return;
+    const cur = document.getElementById(currentId);
+    const next = document.getElementById(id);
+    if(!next) return;
+    const dur = reducedMotion() ? 0 : 320;
+
+    cur.classList.add('leave');
+    
+    // Quick auto-scroll to the top to ensure the user sees the top of the next page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    setTimeout(() => {
+      cur.classList.remove('active', 'leave');
+      next.classList.add('active', 'enter');
+      void next.offsetWidth;
+      requestAnimationFrame(() => next.classList.remove('enter'));
+      currentId = id;
+      updateNav(id);
+      updateCoords(id);
+      restartFrame();
+    }, dur);
+  }
+
+  document.querySelectorAll('[data-target]').forEach(el => {
+    el.addEventListener('click', () => showSheet(el.dataset.target));
+  });
+
+  window.addEventListener('load', () => {
+    setTimeout(restartFrame, 250);
+  });
+</script>
+
+</body>
+</html>
